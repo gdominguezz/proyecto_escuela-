@@ -1,15 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "8mKzLXhsgfA=",
+  "dgSpecHash": "YIo8qrjiET0=",
   "success": true,
   "projectFilePath": "C:\\Users\\dominguezg\\Documents\\proyecto_escuela\\proyecto_escuela\\proyecto_escuela\\proyecto_escuela.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\dominguezg\\.nuget\\packages\\microsoft.entityframeworkcore\\10.0.4\\microsoft.entityframeworkcore.10.0.4.nupkg.sha512",
-    "C:\\Users\\dominguezg\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\10.0.4\\microsoft.entityframeworkcore.abstractions.10.0.4.nupkg.sha512",
-    "C:\\Users\\dominguezg\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\10.0.4\\microsoft.entityframeworkcore.analyzers.10.0.4.nupkg.sha512",
-    "C:\\Users\\dominguezg\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\10.0.4\\microsoft.entityframeworkcore.relational.10.0.4.nupkg.sha512",
-    "C:\\Users\\dominguezg\\.nuget\\packages\\npgsql\\10.0.2\\npgsql.10.0.2.nupkg.sha512",
-    "C:\\Users\\dominguezg\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\10.0.1\\npgsql.entityframeworkcore.postgresql.10.0.1.nupkg.sha512"
+    "C:\\Users\\dominguezg\\.nuget\\packages\\npgsql\\9.0.3\\npgsql.9.0.3.nupkg.sha512"
   ],
   "logs": []
 }
