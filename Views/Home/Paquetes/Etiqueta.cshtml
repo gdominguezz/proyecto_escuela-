@@ -1,0 +1,222 @@
+﻿@model proyecto_escuela.Models.Paquete
+@{
+    ViewData["Title"] = "Etiqueta";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Etiqueta — @Model.IdUnico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #f5f5f0;
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            background: #0f0f10;
+            color: #e8ff57;
+            border: none;
+            border-radius: 10px;
+            padding: 11px 22px;
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.03em;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.8; }
+
+        .btn-secondary {
+            background: white;
+            color: #0f0f10;
+            border: 1px solid #ddd;
+        }
+
+        .label {
+            width: 100mm;
+            background: white;
+            border: 1.5px solid #ddd;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+        }
+
+        .label-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1.5px dashed #e0e0da;
+        }
+
+        .company {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f0f10;
+        }
+
+        .estado-badge {
+            background: #e8ff57;
+            color: #0f0f10;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 100px;
+        }
+
+        .section {
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 3px;
+        }
+
+        .section-value {
+            font-size: 14px;
+            color: #0f0f10;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .section-value.large {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #ebebeb;
+            margin: 1rem 0;
+        }
+
+        .barcode-section {
+            text-align: center;
+            padding-top: 0.5rem;
+        }
+
+        svg#barcode {
+            width: 100%;
+            max-height: 60px;
+        }
+
+        .folio {
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            color: #555;
+            margin-top: 6px;
+            letter-spacing: 0.15em;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        @@media print {
+            body { background: white; padding: 0; }
+            .actions { display: none; }
+            .label {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                border-radius: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="actions">
+        <button class="btn" onclick="window.print()">Imprimir etiqueta</button>
+        <a href="/Paquetes/Registrar" class="btn btn-secondary">Registrar otro</a>
+    </div>
+
+    <div class="label">
+        <div class="label-header">
+            <span class="company">📦 Paquetería</span>
+            <span class="estado-badge">En almacén</span>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Destinatario</div>
+            <div class="section-value large">@Model.Destinatario</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Dirección</div>
+            <div class="section-value">@Model.Direccion</div>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="meta-row">
+            <div class="section">
+                <div class="section-title">Remitente</div>
+                <div class="section-value">@Model.Remitente</div>
+            </div>
+            <div class="section" style="text-align:right">
+                <div class="section-title">Peso</div>
+                <div class="section-value">@Model.Peso kg</div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Comentarios))
+        {
+            <div class="section">
+                <div class="section-title">Nota</div>
+                <div class="section-value" style="font-size:12px;color:#666">@Model.Comentarios</div>
+            </div>
+        }
+
+        <hr class="divider" />
+
+        <div class="barcode-section">
+            <svg id="barcode"></svg>
+            <div class="folio">@Model.IdUnico</div>
+        </div>
+    </div>
+
+    <script>
+        JsBarcode("#barcode", "@Model.IdUnico", {
+            format: "CODE128",
+            width: 2,
+            height: 50,
+            displayValue: false,
+            margin: 0,
+            background: "white",
+            lineColor: "#0f0f10"
+        });
+    </script>
+</body>
+</html>

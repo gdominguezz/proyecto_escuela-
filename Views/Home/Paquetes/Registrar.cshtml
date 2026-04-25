@@ -1,0 +1,178 @@
+﻿@{
+    ViewData["Title"] = "Registrar Paquete";
+}
+
+<style>
+    :root {
+        --accent: #e8ff57;
+        --accent-dark: #c8df30;
+        --surface: #1a1a1d;
+        --surface2: #242428;
+        --border: rgba(255,255,255,0.08);
+        --text: #f0f0ee;
+        --muted: #888884;
+        --radius: 14px;
+    }
+
+    .paq-wrapper {
+        max-width: 560px;
+        margin: 0 auto;
+    }
+
+    .paq-header { margin-bottom: 2.5rem; }
+
+    .paq-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(232,255,87,0.12);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 5px 12px;
+        border-radius: 100px;
+        border: 1px solid rgba(232,255,87,0.25);
+        margin-bottom: 1rem;
+    }
+
+    .paq-badge::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+    }
+
+    .paq-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        line-height: 1.1;
+        color: var(--text);
+    }
+
+    .paq-title span { color: var(--accent); }
+
+    .paq-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2rem;
+    }
+
+    .paq-field { margin-bottom: 1.25rem; }
+
+    .paq-field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+    .paq-field input,
+    .paq-field textarea {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 15px;
+        transition: border-color 0.2s;
+        outline: none;
+    }
+
+    .paq-field input:focus,
+    .paq-field textarea:focus { border-color: var(--accent); }
+
+    .paq-field textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .paq-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 1.5rem 0;
+    }
+
+    .paq-section-label {
+        font-family: 'Syne', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 1.25rem;
+    }
+
+    .paq-btn {
+        width: 100%;
+        background: var(--accent);
+        color: #0f0f10;
+        border: none;
+        border-radius: 10px;
+        padding: 15px;
+        font-family: 'Syne', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+        transition: background 0.2s, transform 0.1s;
+        margin-top: 0.5rem;
+    }
+
+    .paq-btn:hover { background: var(--accent-dark); }
+    .paq-btn:active { transform: scale(0.98); }
+</style>
+
+<div class="paq-wrapper">
+    <div class="paq-header">
+        <div class="paq-badge">Almacén</div>
+        <h1 class="paq-title">Registrar <span>paquete</span></h1>
+    </div>
+
+    <div class="paq-card">
+        <form asp-action="Registrar" method="post">
+
+            <p class="paq-section-label">Remitente</p>
+            <div class="paq-field">
+                <label>Nombre</label>
+                <input type="text" name="Remitente" placeholder="Nombre completo o empresa" required />
+            </div>
+
+            <hr class="paq-divider" />
+
+            <p class="paq-section-label">Destinatario</p>
+            <div class="paq-field">
+                <label>Nombre</label>
+                <input type="text" name="Destinatario" placeholder="Nombre completo o empresa" required />
+            </div>
+            <div class="paq-field">
+                <label>Dirección de entrega</label>
+                <input type="text" name="Direccion" placeholder="Calle, número, colonia, ciudad" required />
+            </div>
+
+            <hr class="paq-divider" />
+
+            <p class="paq-section-label">Paquete</p>
+            <div class="paq-field">
+                <label>Peso (kg)</label>
+                <input type="number" name="Peso" step="0.1" min="0" placeholder="0.0" required />
+            </div>
+
+            <div class="paq-field">
+                <label>Comentarios</label>
+                <textarea name="Comentarios" placeholder="Frágil, instrucciones especiales..."></textarea>
+            </div>
+
+            <button type="submit" class="paq-btn">Registrar e imprimir etiqueta →</button>
+        </form>
+    </div>
+</div>

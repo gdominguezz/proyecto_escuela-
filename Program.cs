@@ -1,8 +1,12 @@
+using proyecto_escuela.Data;
+using proyecto_escuela.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddSingleton<DbConnectionPool>();
+builder.Services.AddScoped<PaqueteRepository>();
 var app = builder.Build();
 
 // 🔥 CLAVE PARA DOCKER

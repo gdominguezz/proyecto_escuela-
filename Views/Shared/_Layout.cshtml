@@ -1,47 +1,127 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - proyecto_escuela</title>
+    <title>@ViewData["Title"] - Paquetería</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/proyecto_escuela.styles.css" asp-append-version="true" />
+    <style>
+        body { background: #f8f8f6; }
+
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            width: 230px;
+            height: 100vh;
+            background: #0f0f10;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            font-family: 'Syne', sans-serif;
+            font-size: 17px;
+            font-weight: 800;
+            color: #e8ff57;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-section {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #555;
+            padding: 0 0.75rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .sidebar .nav-link {
+            color: #888;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 0.6rem 0.75rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.15s, color 0.15s;
+            text-decoration: none;
+        }
+
+        .sidebar .nav-link:hover {
+            background: rgba(255,255,255,0.07);
+            color: #f0f0ee;
+        }
+
+        .sidebar .nav-link.active {
+            background: rgba(232,255,87,0.12);
+            color: #e8ff57;
+        }
+
+        .sidebar .nav-link .icon {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .main-content {
+            margin-left: 230px;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">proyecto_escuela</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <nav class="sidebar">
+        <a class="sidebar-brand" asp-controller="Home" asp-action="Index">
+            📦 Paquetería
+        </a>
+
+        <span class="sidebar-section">Almacén</span>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Paquetes" && ViewContext.RouteData.Values["action"]?.ToString() == "Registrar" ? "active" : "")"
+           asp-controller="Paquetes" asp-action="Registrar">
+            <span class="icon">＋</span> Registrar paquete
+        </a>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Paquetes" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+           asp-controller="Paquetes" asp-action="Index">
+            <span class="icon">☰</span> Ver paquetes
+        </a>
+
+        <span class="sidebar-section">Repartidores</span>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Repartidores" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")"
+           asp-controller="Repartidores" asp-action="Index">
+            <span class="icon">🚴</span> Ver repartidores
+        </a>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Asignaciones" ? "active" : "")"
+           asp-controller="Asignaciones" asp-action="Index">
+            <span class="icon">↗</span> Asignar paquetes
+        </a>
+    </nav>
+
+    <div class="main-content">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - proyecto_escuela - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
