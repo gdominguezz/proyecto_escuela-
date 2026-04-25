@@ -1,0 +1,227 @@
+﻿@model List<proyecto_escuela.Models.Repartidor>
+@{
+    ViewData["Title"] = "Repartidores";
+}
+
+<style>
+    :root {
+        --accent: #e8ff57;
+        --surface: #1a1a1d;
+        --surface2: #242428;
+        --border: rgba(255,255,255,0.08);
+        --text: #f0f0ee;
+        --muted: #888884;
+        --radius: 14px;
+    }
+
+    .rep-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+
+    .rep-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .rep-title span { color: var(--accent); }
+
+    .rep-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .rep-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+
+    .rep-card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        font-family: 'Syne', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    .rep-table { width: 100%; border-collapse: collapse; }
+
+    .rep-table th {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 12px 20px;
+        text-align: left;
+    }
+
+    .rep-table td {
+        padding: 12px 20px;
+        font-size: 14px;
+        color: var(--text);
+        border-top: 1px solid var(--border);
+    }
+
+    .rep-table tbody tr:hover { background: var(--surface2); }
+
+    .activo-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 100px;
+    }
+
+    .activo-si { background: rgba(100,255,150,0.12); color: #64ff96; }
+    .activo-no { background: rgba(255,100,100,0.12); color: #ff6464; }
+
+    .btn-toggle {
+        background: var(--surface2);
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+    .form-field { margin-bottom: 1rem; }
+
+    .form-field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 5px;
+    }
+
+    .form-field input {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 14px;
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .form-field input:focus { border-color: var(--accent); }
+
+    .btn-agregar {
+        width: 100%;
+        background: var(--accent);
+        color: #0f0f10;
+        border: none;
+        border-radius: 10px;
+        padding: 13px;
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        margin-top: 0.25rem;
+    }
+
+    .btn-agregar:hover { opacity: 0.85; }
+
+    .form-body { padding: 1.5rem; }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--muted);
+        font-size: 14px;
+    }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+
+<div class="rep-header">
+    <h1 class="rep-title">Ver <span>repartidores</span></h1>
+</div>
+
+<div class="rep-grid">
+
+    <!-- Lista -->
+    <div class="rep-card">
+        <div class="rep-card-header">Repartidores registrados</div>
+        @if (!Model.Any())
+        {
+            <div class="empty-state">No hay repartidores aún.</div>
+        }
+        else
+        {
+            <table class="rep-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td>@r.Nombre</td>
+                            <td style="color: var(--muted);">@r.Telefono</td>
+                            <td>
+                                <span class="activo-badge @(r.Activo ? "activo-si" : "activo-no")">
+                                    @(r.Activo ? "Activo" : "Inactivo")
+                                </span>
+                            </td>
+                            <td>
+                                <form asp-action="Toggle" method="post" style="margin:0">
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <button type="submit" class="btn-toggle">
+                                        @(r.Activo ? "Desactivar" : "Activar")
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+    <!-- Formulario -->
+    <div class="rep-card">
+        <div class="rep-card-header">Agregar repartidor</div>
+        <div class="form-body">
+            <form asp-action="Agregar" method="post">
+                <div class="form-field">
+                    <label>Nombre</label>
+                    <input type="text" name="Nombre" placeholder="Nombre completo" required />
+                </div>
+                <div class="form-field">
+                    <label>Teléfono</label>
+                    <input type="text" name="Telefono" placeholder="614 000 0000" required />
+                </div>
+                <button type="submit" class="btn-agregar">Agregar repartidor</button>
+            </form>
+        </div>
+    </div>
+
+</div>
