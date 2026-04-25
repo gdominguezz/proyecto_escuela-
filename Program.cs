@@ -8,6 +8,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<DbConnectionPool>();
 builder.Services.AddScoped<PaqueteRepository>();
 builder.Services.AddScoped<RepartidorRepository>();
+builder.Services.AddScoped<AsignacionRepository>();
 var app = builder.Build();
 
 // 🔥 CLAVE PARA DOCKER

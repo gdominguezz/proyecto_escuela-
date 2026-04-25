@@ -1,0 +1,229 @@
+﻿@{
+    ViewData["Title"] = "Asignar Paquetes";
+    var paquetes = ViewBag.Paquetes as List<proyecto_escuela.Models.Paquete>;
+    var repartidores = ViewBag.Repartidores as List<proyecto_escuela.Models.Repartidor>;
+}
+
+<style>
+    :root {
+        --accent: #e8ff57;
+        --surface: #1a1a1d;
+        --surface2: #242428;
+        --border: rgba(255,255,255,0.08);
+        --text: #f0f0ee;
+        --muted: #888884;
+        --radius: 14px;
+    }
+
+    .asg-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 2rem;
+    }
+
+        .asg-title span {
+            color: var(--accent);
+        }
+
+    .asg-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .asg-card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        font-family: 'Syne', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    .asg-form {
+        padding: 1.5rem;
+    }
+
+    .asg-field {
+        margin-bottom: 1.25rem;
+    }
+
+        .asg-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .asg-field select {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            appearance: none;
+        }
+
+            .asg-field select:focus {
+                border-color: var(--accent);
+            }
+
+            .asg-field select option {
+                background: #1a1a1d;
+            }
+
+    .btn-asignar {
+        width: 100%;
+        background: var(--accent);
+        color: #0f0f10;
+        border: none;
+        border-radius: 10px;
+        padding: 14px;
+        font-family: 'Syne', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+        .btn-asignar:hover {
+            opacity: 0.85;
+        }
+
+    .asg-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .asg-table th {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 12px 20px;
+            text-align: left;
+        }
+
+        .asg-table td {
+            padding: 12px 20px;
+            font-size: 14px;
+            color: var(--text);
+            border-top: 1px solid var(--border);
+        }
+
+        .asg-table tbody tr:hover {
+            background: var(--surface2);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .asg-layout {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+
+<h1 class="asg-title">Asignar <span>paquetes</span></h1>
+
+<div class="asg-layout">
+
+    <!-- Formulario -->
+    <div class="asg-card">
+        <div class="asg-card-header">Nueva asignación</div>
+        <div class="asg-form">
+            @if (paquetes!.Any() && repartidores!.Any())
+            {
+                <form asp-action="Asignar" method="post">
+                    <div class="asg-field">
+                        <label>Paquete (EN ALMACÉN)</label>
+                        <select name="paqueteId" required>
+                            <option value="">Selecciona un paquete...</option>
+                            @foreach (var p in paquetes)
+                            {
+                                <option value="@p.Id">@p.IdUnico — @p.Destinatario</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="asg-field">
+                        <label>Repartidor</label>
+                        <select name="repartidorId" required>
+                            <option value="">Selecciona un repartidor...</option>
+                            @foreach (var r in repartidores)
+                            {
+                                <option value="@r.Id">@r.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-asignar">Asignar paquete →</button>
+                </form>
+            }
+            else if (!paquetes.Any())
+            {
+                <div class="empty-state">No hay paquetes en almacén disponibles.</div>
+            }
+            else
+            {
+                <div class="empty-state">No hay repartidores activos. Agrega uno primero.</div>
+            }
+        </div>
+    </div>
+
+    <!-- Paquetes en almacén -->
+    <div class="asg-card">
+        <div class="asg-card-header">Paquetes disponibles en almacén (@paquetes!.Count)</div>
+        @if (!paquetes.Any())
+        {
+            <div class="empty-state">No hay paquetes en almacén.</div>
+        }
+        else
+        {
+            <table class="asg-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Destinatario</th>
+                        <th>Dirección</th>
+                        <th>Peso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in paquetes)
+                    {
+                        <tr>
+                            <td style="font-family: monospace; font-size: 12px; color: var(--muted);">@p.IdUnico</td>
+                            <td>@p.Destinatario</td>
+                            <td style="color: var(--muted); font-size: 13px;">@p.Direccion</td>
+                            <td style="color: var(--muted);">@p.Peso kg</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+</div>
