@@ -110,6 +110,11 @@
            asp-controller="Repartidores" asp-action="Index">
             <span class="icon">🚴</span> Ver repartidores
         </a>
+        <span class="sidebar-section">Entregas</span>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Entregas" ? "active" : "")"
+           asp-controller="Entregas" asp-action="Index">
+            <span class="icon">✅</span> Entregar paquete
+        </a>
         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Asignaciones" ? "active" : "")"
            asp-controller="Asignaciones" asp-action="Index">
             <span class="icon">↗</span> Asignar paquetes

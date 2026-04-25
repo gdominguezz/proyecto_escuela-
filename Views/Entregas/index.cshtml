@@ -1,0 +1,357 @@
+﻿@{
+    ViewData["Title"] = "Entregas";
+    var enRuta = ViewBag.EnRuta as List<proyecto_escuela.Models.Paquete>;
+    var paquete = ViewBag.Paquete as proyecto_escuela.Models.Paquete;
+    var codigo = ViewBag.Codigo as string;
+    var noEncontrado = ViewBag.NoEncontrado as bool? ?? false;
+    var entregado = TempData["Entregado"] as string;
+}
+
+<style>
+    :root {
+        --accent: #e8ff57;
+        --surface: #1a1a1d;
+        --surface2: #242428;
+        --border: rgba(255,255,255,0.08);
+        --text: #f0f0ee;
+        --muted: #888884;
+        --radius: 14px;
+    }
+
+    .ent-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 2rem;
+    }
+
+    .ent-title span { color: var(--accent); }
+
+    .ent-layout {
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .ent-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+
+    .ent-card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        font-family: 'Syne', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    .ent-body { padding: 1.5rem; }
+
+    .scan-field {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+    }
+
+    .scan-field input {
+        flex: 1;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        color: var(--text);
+        font-family: 'DM Mono', monospace;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s;
+        letter-spacing: 0.1em;
+    }
+
+    .scan-field input:focus { border-color: var(--accent); }
+
+    .btn-buscar {
+        background: var(--surface2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 18px;
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color 0.2s;
+        white-space: nowrap;
+    }
+
+    .btn-buscar:hover { border-color: var(--accent); color: var(--accent); }
+
+    .paquete-info {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+
+    .info-row:last-child { margin-bottom: 0; }
+
+    .info-label {
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+    }
+
+    .info-value {
+        font-size: 14px;
+        color: var(--text);
+        font-weight: 500;
+        text-align: right;
+        max-width: 60%;
+    }
+
+    .estado-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 100px;
+    }
+
+    .estado-EN_RUTA { background: rgba(100,180,255,0.12); color: #64b4ff; }
+    .estado-ENTREGADO { background: rgba(100,255,150,0.12); color: #64ff96; }
+    .estado-EN_ALMACEN { background: rgba(232,255,87,0.12); color: #e8ff57; }
+
+    .campo-comentario {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 14px;
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        outline: none;
+        resize: none;
+        margin-bottom: 1rem;
+        transition: border-color 0.2s;
+    }
+
+    .campo-comentario:focus { border-color: var(--accent); }
+
+    .btn-entregar {
+        width: 100%;
+        background: var(--accent);
+        color: #0f0f10;
+        border: none;
+        border-radius: 10px;
+        padding: 14px;
+        font-family: 'Syne', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    .btn-entregar:hover { opacity: 0.85; }
+
+    .alert-success {
+        background: rgba(100,255,150,0.1);
+        border: 1px solid rgba(100,255,150,0.3);
+        color: #64ff96;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        margin-bottom: 1rem;
+    }
+
+    .alert-error {
+        background: rgba(255,100,100,0.1);
+        border: 1px solid rgba(255,100,100,0.3);
+        color: #ff6464;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        margin-bottom: 1rem;
+    }
+
+    .no-entregable {
+        background: rgba(255,180,50,0.1);
+        border: 1px solid rgba(255,180,50,0.3);
+        color: #ffb432;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        margin-bottom: 1rem;
+    }
+
+    .ent-table { width: 100%; border-collapse: collapse; }
+
+    .ent-table th {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 12px 20px;
+        text-align: left;
+    }
+
+    .ent-table td {
+        padding: 12px 20px;
+        font-size: 14px;
+        color: var(--text);
+        border-top: 1px solid var(--border);
+    }
+
+    .ent-table tbody tr:hover { background: var(--surface2); }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .scan-hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 1rem;
+    }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+
+<h1 class="ent-title">Entrega <span>al cliente</span></h1>
+
+<div class="ent-layout">
+
+    <!-- Panel izquierdo: escáner -->
+    <div class="ent-card">
+        <div class="ent-card-header">📷 Escanear paquete</div>
+        <div class="ent-body">
+
+            @if (entregado != null)
+            {
+                <div class="alert-success">✅ Paquete <strong>@entregado</strong> marcado como entregado.</div>
+            }
+
+            <p class="scan-hint">Escanea el código de barras o escribe el ID del paquete.</p>
+
+            <form method="get" asp-action="Index">
+                <div class="scan-field">
+                    <input type="text" name="codigo" value="@codigo" placeholder="Ej: A1B2C3D4E5F6"
+                           id="scanInput" autocomplete="off" autofocus />
+                    <button type="submit" class="btn-buscar">Buscar</button>
+                </div>
+            </form>
+
+            @if (noEncontrado)
+            {
+                <div class="alert-error">❌ No se encontró ningún paquete con ese código.</div>
+            }
+            else if (paquete != null)
+            {
+                <div class="paquete-info">
+                    <div class="info-row">
+                        <span class="info-label">ID</span>
+                        <span class="info-value" style="font-family: monospace;">@paquete.IdUnico</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Destinatario</span>
+                        <span class="info-value">@paquete.Destinatario</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Dirección</span>
+                        <span class="info-value">@paquete.Direccion</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Peso</span>
+                        <span class="info-value">@paquete.Peso kg</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Estado</span>
+                        <span class="estado-badge estado-@paquete.Estado">@paquete.Estado.Replace("_", " ")</span>
+                    </div>
+                </div>
+
+                @if (paquete.Estado == "EN_RUTA")
+                {
+                    <form asp-action="Entregar" method="post">
+                        <input type="hidden" name="paqueteId" value="@paquete.Id" />
+                        <input type="hidden" name="idUnico" value="@paquete.IdUnico" />
+                        <textarea class="campo-comentario" name="comentario" rows="2"
+                                  placeholder="Comentario opcional (ej: recibió vecino)"></textarea>
+                        <button type="submit" class="btn-entregar">✅ Marcar como entregado</button>
+                    </form>
+                }
+                else if (paquete.Estado == "ENTREGADO")
+                {
+                    <div class="alert-success">Este paquete ya fue entregado.</div>
+                }
+                else
+                {
+                    <div class="no-entregable">⚠️ Este paquete está en <strong>@paquete.Estado.Replace("_", " ")</strong> y no puede entregarse aún. Debe estar EN RUTA.</div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Panel derecho: paquetes en ruta -->
+    <div class="ent-card">
+        <div class="ent-card-header">Paquetes en ruta (@enRuta!.Count)</div>
+        @if (!enRuta.Any())
+        {
+            <div class="empty-state">No hay paquetes en ruta actualmente.</div>
+        }
+        else
+        {
+            <table class="ent-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Destinatario</th>
+                        <th>Dirección</th>
+                        <th>Peso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in enRuta)
+                    {
+                        <tr>
+                            <td style="font-family: monospace; font-size: 12px; color: var(--muted);">@p.IdUnico</td>
+                            <td>@p.Destinatario</td>
+                            <td style="color: var(--muted); font-size: 13px;">@p.Direccion</td>
+                            <td style="color: var(--muted);">@p.Peso kg</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+</div>
+
+<script>
+    // Auto-submit cuando el escáner termina de escribir (presiona Enter)
+    document.getElementById('scanInput').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.form.submit();
+        }
+    });
+</script>

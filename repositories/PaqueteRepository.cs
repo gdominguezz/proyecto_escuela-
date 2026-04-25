@@ -97,4 +97,71 @@ public class PaqueteRepository
         }
         return lista;
     }
+    public async Task<List<Paquete>> ObtenerEnRutaAsync()
+    {
+        var lista = new List<Paquete>();
+        await using var conn = await _pool.OpenAsync();
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT * FROM paquetes WHERE estado = 'EN_RUTA' ORDER BY fecha_ingreso ASC";
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            lista.Add(new Paquete
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("id")),
+                IdUnico = reader.GetString(reader.GetOrdinal("id_unico")),
+                Remitente = reader.GetString(reader.GetOrdinal("remitente")),
+                Destinatario = reader.GetString(reader.GetOrdinal("destinatario")),
+                Direccion = reader.GetString(reader.GetOrdinal("direccion")),
+                Peso = reader.GetDecimal(reader.GetOrdinal("peso")),
+                Estado = reader.GetString(reader.GetOrdinal("estado")),
+                FechaIngreso = reader.GetDateTime(reader.GetOrdinal("fecha_ingreso"))
+            });
+        }
+        return lista;
+    }
+
+    public async Task<Paquete?> ObtenerPorIdUnicoAsync(string idUnico)
+    {
+        await using var conn = await _pool.OpenAsync();
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT * FROM paquetes WHERE id_unico = @idUnico";
+        cmd.Parameters.AddWithValue("idUnico", idUnico);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+        if (!await reader.ReadAsync()) return null;
+
+        return new Paquete
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("id")),
+            IdUnico = reader.GetString(reader.GetOrdinal("id_unico")),
+            Remitente = reader.GetString(reader.GetOrdinal("remitente")),
+            Destinatario = reader.GetString(reader.GetOrdinal("destinatario")),
+            Direccion = reader.GetString(reader.GetOrdinal("direccion")),
+            FechaIngreso = reader.GetDateTime(reader.GetOrdinal("fecha_ingreso")),
+            Estado = reader.GetString(reader.GetOrdinal("estado")),
+            Peso = reader.GetDecimal(reader.GetOrdinal("peso")),
+            Comentarios = reader.IsDBNull(reader.GetOrdinal("comentarios")) ? null : reader.GetString(reader.GetOrdinal("comentarios"))
+        };
+    }
+
+    public async Task EntregarAsync(int paqueteId, string? comentario)
+    {
+        await using var conn = await _pool.OpenAsync();
+
+        await using var cmd1 = conn.CreateCommand();
+        cmd1.CommandText = "UPDATE paquetes SET estado = 'ENTREGADO' WHERE id = @id";
+        cmd1.Parameters.AddWithValue("id", paqueteId);
+        await cmd1.ExecuteNonQueryAsync();
+
+        await using var cmd2 = conn.CreateCommand();
+        cmd2.CommandText = """
+        INSERT INTO historial_estados (paquete_id, estado, comentario)
+        VALUES (@id, 'ENTREGADO', @comentario)
+        """;
+        cmd2.Parameters.AddWithValue("id", paqueteId);
+        cmd2.Parameters.AddWithValue("comentario", (object?)comentario ?? DBNull.Value);
+        await cmd2.ExecuteNonQueryAsync();
+    }
 }
