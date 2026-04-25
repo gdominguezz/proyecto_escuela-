@@ -29,4 +29,9 @@ public class PaquetesController : Controller
         if (paquete == null) return NotFound();
         return View(paquete);
     }
+    public async Task<IActionResult> Index()
+    {
+        var paquetes = await _repo.ObtenerTodosAsync();
+        return View(paquetes);
+    }
 }

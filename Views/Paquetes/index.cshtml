@@ -1,0 +1,165 @@
+﻿@model List<proyecto_escuela.Models.Paquete>
+@{
+    ViewData["Title"] = "Paquetes";
+}
+
+<style>
+    :root {
+        --accent: #e8ff57;
+        --surface: #1a1a1d;
+        --surface2: #242428;
+        --border: rgba(255,255,255,0.08);
+        --text: #f0f0ee;
+        --muted: #888884;
+        --radius: 14px;
+    }
+
+    .paq-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+
+    .paq-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .paq-title span { color: var(--accent); }
+
+    .paq-btn-new {
+        background: var(--accent);
+        color: #0f0f10;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .paq-btn-new:hover { opacity: 0.85; color: #0f0f10; }
+
+    .paq-table-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+
+    .paq-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .paq-table thead tr {
+        border-bottom: 1px solid var(--border);
+    }
+
+    .paq-table th {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 14px 20px;
+        text-align: left;
+    }
+
+    .paq-table td {
+        padding: 14px 20px;
+        font-size: 14px;
+        color: var(--text);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .paq-table tbody tr:last-child td { border-bottom: none; }
+
+    .paq-table tbody tr:hover { background: var(--surface2); }
+
+    .estado-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 100px;
+    }
+
+    .estado-EN_ALMACEN  { background: rgba(232,255,87,0.12); color: #e8ff57; }
+    .estado-EN_RUTA     { background: rgba(100,180,255,0.12); color: #64b4ff; }
+    .estado-ENTREGADO   { background: rgba(100,255,150,0.12); color: #64ff96; }
+    .estado-INCIDENCIA  { background: rgba(255,100,100,0.12); color: #ff6464; }
+
+    .paq-link {
+        color: var(--muted);
+        font-size: 13px;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .paq-link:hover { color: var(--accent); }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--muted);
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state p { font-size: 15px; }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+
+<div class="paq-header">
+    <h1 class="paq-title">Ver <span>paquetes</span></h1>
+    <a href="/Paquetes/Registrar" class="paq-btn-new">+ Registrar paquete</a>
+</div>
+
+<div class="paq-table-wrap">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="icon">📦</div>
+            <p>No hay paquetes registrados aún.</p>
+        </div>
+    }
+    else
+    {
+        <table class="paq-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Destinatario</th>
+                    <th>Remitente</th>
+                    <th>Peso</th>
+                    <th>Estado</th>
+                    <th>Fecha ingreso</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td style="font-family: monospace; font-size: 13px; color: var(--muted);">@p.IdUnico</td>
+                        <td>@p.Destinatario</td>
+                        <td style="color: var(--muted);">@p.Remitente</td>
+                        <td style="color: var(--muted);">@p.Peso kg</td>
+                        <td><span class="estado-badge estado-@p.Estado">@p.Estado.Replace("_", " ")</span></td>
+                        <td style="color: var(--muted); font-size: 13px;">@p.FechaIngreso.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td><a href="/Paquetes/Etiqueta/@p.IdUnico" class="paq-link">Ver etiqueta →</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

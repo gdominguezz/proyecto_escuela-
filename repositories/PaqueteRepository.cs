@@ -72,4 +72,29 @@ public class PaqueteRepository
             Comentarios = reader.IsDBNull(reader.GetOrdinal("comentarios")) ? null : reader.GetString(reader.GetOrdinal("comentarios"))
         };
     }
+    public async Task<List<Paquete>> ObtenerTodosAsync()
+    {
+        var lista = new List<Paquete>();
+        await using var conn = await _pool.OpenAsync();
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT * FROM paquetes ORDER BY fecha_ingreso DESC";
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            lista.Add(new Paquete
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("id")),
+                IdUnico = reader.GetString(reader.GetOrdinal("id_unico")),
+                Remitente = reader.GetString(reader.GetOrdinal("remitente")),
+                Destinatario = reader.GetString(reader.GetOrdinal("destinatario")),
+                Direccion = reader.GetString(reader.GetOrdinal("direccion")),
+                FechaIngreso = reader.GetDateTime(reader.GetOrdinal("fecha_ingreso")),
+                Estado = reader.GetString(reader.GetOrdinal("estado")),
+                Peso = reader.GetDecimal(reader.GetOrdinal("peso")),
+                Comentarios = reader.IsDBNull(reader.GetOrdinal("comentarios")) ? null : reader.GetString(reader.GetOrdinal("comentarios"))
+            });
+        }
+        return lista;
+    }
 }
