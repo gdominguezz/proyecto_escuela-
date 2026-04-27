@@ -122,29 +122,7 @@ public class PaqueteRepository
         return lista;
     }
 
-    public async Task<Paquete?> ObtenerPorIdUnicoAsync(string idUnico)
-    {
-        await using var conn = await _pool.OpenAsync();
-        await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT * FROM paquetes WHERE id_unico = @idUnico";
-        cmd.Parameters.Add(new NpgsqlParameter("idUnico", NpgsqlTypes.NpgsqlDbType.Text) { Value = idUnico });
 
-        await using var reader = await cmd.ExecuteReaderAsync();
-        if (!await reader.ReadAsync()) return null;
-
-        return new Paquete
-        {
-            Id = reader.GetInt32(reader.GetOrdinal("id")),
-            IdUnico = reader.GetString(reader.GetOrdinal("id_unico")),
-            Remitente = reader.GetString(reader.GetOrdinal("remitente")),
-            Destinatario = reader.GetString(reader.GetOrdinal("destinatario")),
-            Direccion = reader.GetString(reader.GetOrdinal("direccion")),
-            FechaIngreso = reader.GetDateTime(reader.GetOrdinal("fecha_ingreso")),
-            Estado = reader.GetString(reader.GetOrdinal("estado")),
-            Peso = reader.GetDecimal(reader.GetOrdinal("peso")),
-            Comentarios = reader.IsDBNull(reader.GetOrdinal("comentarios")) ? null : reader.GetString(reader.GetOrdinal("comentarios"))
-        };
-    }
 
     public async Task EntregarAsync(int paqueteId, string? comentario)
     {
