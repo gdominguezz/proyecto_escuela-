@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using NpgsqlTypes;
 using proyecto_escuela.Data;
 using proyecto_escuela.Models;
 
@@ -15,35 +16,31 @@ public class PaqueteRepository
 
     public async Task<string> RegistrarAsync(Paquete p)
     {
-        // Generar id_unico aleatorio
         p.IdUnico = Guid.NewGuid().ToString("N")[..12].ToUpper();
 
         await using var conn = await _pool.OpenAsync();
-
-        // Insertar paquete
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = """
             INSERT INTO paquetes (id_unico, remitente, destinatario, direccion, estado, peso, comentarios)
             VALUES (@idUnico, @remitente, @destinatario, @direccion, @estado, @peso, @comentarios)
             RETURNING id
             """;
-        cmd.Parameters.AddWithValue("idUnico", p.IdUnico);
-        cmd.Parameters.AddWithValue("remitente", p.Remitente);
-        cmd.Parameters.AddWithValue("destinatario", p.Destinatario);
-        cmd.Parameters.AddWithValue("direccion", p.Direccion);
-        cmd.Parameters.AddWithValue("estado", p.Estado);
-        cmd.Parameters.AddWithValue("peso", p.Peso);
-        cmd.Parameters.AddWithValue("comentarios", (object?)p.Comentarios ?? DBNull.Value);
+        cmd.Parameters.Add(new NpgsqlParameter("idUnico", NpgsqlDbType.Text) { Value = p.IdUnico });
+        cmd.Parameters.Add(new NpgsqlParameter("remitente", NpgsqlDbType.Text) { Value = p.Remitente });
+        cmd.Parameters.Add(new NpgsqlParameter("destinatario", NpgsqlDbType.Text) { Value = p.Destinatario });
+        cmd.Parameters.Add(new NpgsqlParameter("direccion", NpgsqlDbType.Text) { Value = p.Direccion });
+        cmd.Parameters.Add(new NpgsqlParameter("estado", NpgsqlDbType.Text) { Value = p.Estado });
+        cmd.Parameters.Add(new NpgsqlParameter("peso", NpgsqlDbType.Numeric) { Value = p.Peso });
+        cmd.Parameters.Add(new NpgsqlParameter("comentarios", NpgsqlDbType.Text) { Value = (object?)p.Comentarios ?? DBNull.Value });
 
         var paqueteId = (int)(await cmd.ExecuteScalarAsync())!;
 
-        // Registrar en historial
         await using var cmdHistorial = conn.CreateCommand();
         cmdHistorial.CommandText = """
             INSERT INTO historial_estados (paquete_id, estado, comentario)
             VALUES (@paqueteId, 'EN_ALMACEN', 'Ingreso al almacén')
             """;
-        cmdHistorial.Parameters.AddWithValue("paqueteId", paqueteId);
+        cmdHistorial.Parameters.Add(new NpgsqlParameter("paqueteId", NpgsqlDbType.Integer) { Value = paqueteId });
         await cmdHistorial.ExecuteNonQueryAsync();
 
         return p.IdUnico;
@@ -54,7 +51,7 @@ public class PaqueteRepository
         await using var conn = await _pool.OpenAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT * FROM paquetes WHERE id_unico = @idUnico";
-        cmd.Parameters.Add(new NpgsqlParameter("idUnico", NpgsqlTypes.NpgsqlDbType.Text) { Value = idUnico });
+        cmd.Parameters.Add(new NpgsqlParameter("idUnico", NpgsqlDbType.Text) { Value = idUnico });
 
         await using var reader = await cmd.ExecuteReaderAsync();
         if (!await reader.ReadAsync()) return null;
@@ -72,6 +69,7 @@ public class PaqueteRepository
             Comentarios = reader.IsDBNull(reader.GetOrdinal("comentarios")) ? null : reader.GetString(reader.GetOrdinal("comentarios"))
         };
     }
+
     public async Task<List<Paquete>> ObtenerTodosAsync()
     {
         var lista = new List<Paquete>();
@@ -97,6 +95,7 @@ public class PaqueteRepository
         }
         return lista;
     }
+
     public async Task<List<Paquete>> ObtenerEnRutaAsync()
     {
         var lista = new List<Paquete>();
@@ -122,24 +121,22 @@ public class PaqueteRepository
         return lista;
     }
 
-
-
     public async Task EntregarAsync(int paqueteId, string? comentario)
     {
         await using var conn = await _pool.OpenAsync();
 
         await using var cmd1 = conn.CreateCommand();
         cmd1.CommandText = "UPDATE paquetes SET estado = 'ENTREGADO' WHERE id = @id";
-        cmd1.Parameters.AddWithValue("id", paqueteId);
+        cmd1.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Integer) { Value = paqueteId });
         await cmd1.ExecuteNonQueryAsync();
 
         await using var cmd2 = conn.CreateCommand();
         cmd2.CommandText = """
-        INSERT INTO historial_estados (paquete_id, estado, comentario)
-        VALUES (@id, 'ENTREGADO', @comentario)
-        """;
-        cmd2.Parameters.AddWithValue("id", paqueteId);
-        cmd2.Parameters.AddWithValue("comentario", (object?)comentario ?? DBNull.Value);
+            INSERT INTO historial_estados (paquete_id, estado, comentario)
+            VALUES (@id, 'ENTREGADO', @comentario)
+            """;
+        cmd2.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Integer) { Value = paqueteId });
+        cmd2.Parameters.Add(new NpgsqlParameter("comentario", NpgsqlDbType.Text) { Value = (object?)comentario ?? DBNull.Value });
         await cmd2.ExecuteNonQueryAsync();
     }
 }
