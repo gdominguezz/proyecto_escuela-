@@ -23,9 +23,11 @@ public class PaquetesController : Controller
         return RedirectToAction("Etiqueta", new { idUnico });
     }
 
+    [HttpGet]
     public async Task<IActionResult> Etiqueta(string idUnico)
     {
-        var paquete = await _repo.ObtenerPorIdUnicoAsync(idUnico);
+        if (string.IsNullOrEmpty(idUnico)) return BadRequest("ID requerido");
+        var paquete = await _repo.ObtenerPorIdUnicoAsync(idUnico.Trim().ToUpper());
         if (paquete == null) return NotFound();
         return View(paquete);
     }
