@@ -22,12 +22,11 @@ public class PaquetesController : Controller
         var idUnico = await _repo.RegistrarAsync(paquete);
         return RedirectToAction("Etiqueta", new { id = idUnico });
     }
-
     [HttpGet]
-    public async Task<IActionResult> Etiqueta(string idUnico)
+    public async Task<IActionResult> Etiqueta(string id)
     {
-        if (string.IsNullOrEmpty(idUnico)) return BadRequest("ID requerido");
-        var paquete = await _repo.ObtenerPorIdUnicoAsync(idUnico.Trim().ToUpper());
+        if (string.IsNullOrEmpty(id)) return BadRequest("ID requerido");
+        var paquete = await _repo.ObtenerPorIdUnicoAsync(id.Trim().ToUpper());
         if (paquete == null) return NotFound();
         return View(paquete);
     }
