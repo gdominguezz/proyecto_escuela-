@@ -156,10 +156,10 @@
                         <td style="color: var(--muted);">@p.Peso kg</td>
                         <td><span class="estado-badge estado-@p.Estado">@p.Estado.Replace("_", " ")</span></td>
                         <td style="color: var(--muted); font-size: 13px;">@p.FechaIngreso.ToString("dd/MM/yyyy HH:mm")</td>
-                        <td><a href="/Paquetes/Etiqueta/@p.IdUnico" class="paq-link">Ver etiqueta →</a></td>
+                        <td><a asp-controller="Paquetes" asp-action="Etiqueta" asp-route-id="@p.IdUnico" class="paq-link">Ver etiqueta →</a></td>
                     </tr>
                 }
-            </tbody>
+            </tbody>    
         </table>
     }
 </div>

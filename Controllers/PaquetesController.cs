@@ -20,7 +20,7 @@ public class PaquetesController : Controller
     public async Task<IActionResult> Registrar(Paquete paquete)
     {
         var idUnico = await _repo.RegistrarAsync(paquete);
-        return RedirectToAction("Etiqueta", new { idUnico });
+        return RedirectToAction("Etiqueta", new { id = idUnico });
     }
 
     [HttpGet]
