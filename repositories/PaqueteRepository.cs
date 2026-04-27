@@ -54,7 +54,7 @@ public class PaqueteRepository
         await using var conn = await _pool.OpenAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT * FROM paquetes WHERE id_unico = @idUnico";
-        cmd.Parameters.AddWithValue("idUnico", idUnico);
+        cmd.Parameters.Add(new NpgsqlParameter("idUnico", NpgsqlTypes.NpgsqlDbType.Text) { Value = idUnico });
 
         await using var reader = await cmd.ExecuteReaderAsync();
         if (!await reader.ReadAsync()) return null;
@@ -127,7 +127,7 @@ public class PaqueteRepository
         await using var conn = await _pool.OpenAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT * FROM paquetes WHERE id_unico = @idUnico";
-        cmd.Parameters.AddWithValue("idUnico", idUnico);
+        cmd.Parameters.Add(new NpgsqlParameter("idUnico", NpgsqlTypes.NpgsqlDbType.Text) { Value = idUnico });
 
         await using var reader = await cmd.ExecuteReaderAsync();
         if (!await reader.ReadAsync()) return null;
